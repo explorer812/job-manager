@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://yourusername.github.io/job-manager",
+  "homepage": "https://explorer812.github.io/job-manager",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
