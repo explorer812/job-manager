@@ -30,7 +30,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build
+        run: npx vite build
         env:
           VITE_DOUBAO_API_KEY: ${{ secrets.VITE_DOUBAO_API_KEY }}
 
