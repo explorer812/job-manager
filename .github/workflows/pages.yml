@@ -25,12 +25,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
+      - name: Fix permissions
+        run: chmod +x node_modules/.bin/vite
+
       - name: Build
-        run: npx vite build
+        run: npm run build
         env:
           VITE_DOUBAO_API_KEY: ${{ secrets.VITE_DOUBAO_API_KEY }}
 
