@@ -53,17 +53,17 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-md' 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className={`pointer-events-auto w-full ${maxWidth} bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 overflow-hidden`}
+              className={`pointer-events-auto w-full ${maxWidth} bg-white rounded-3xl shadow-2xl border border-[#EFECE6] overflow-hidden`}
               onClick={(e) => e.stopPropagation()}
             >
               {title && (
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                  <h2 className="text-lg font-semibold text-[#2D3748]">{title}</h2>
+                <div className="flex items-center justify-between px-6 py-4 border-b border-[#EFECE6]">
+                  <h2 className="text-xl font-black text-[#2D2D2D] tracking-tight">{title}</h2>
                   <button
                     onClick={onClose}
-                    className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                    className="p-2 rounded-xl hover:bg-[#F9F7F2] transition-colors"
                   >
-                    <X size={20} className="text-[#718096]" />
+                    <X size={20} className="text-[#8C837A]" strokeWidth={2.5} />
                   </button>
                 </div>
               )}

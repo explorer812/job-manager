@@ -16,20 +16,22 @@ import {
   Clock,
   Trash2,
   Link,
+  Monitor,
+  Rocket,
 } from 'lucide-react';
 import { Drawer } from '../ui/Drawer';
 import { Modal } from '../ui/Modal';
 import { StatusSelector } from '../ui/StatusBadge';
 import { CompanyTag } from '../ui/CompanyTag';
-import { useStore, selectSelectedJob } from '../../store/useStore';
+import { useStore } from '../../store/useStore';
 import type { JobStatus, ReminderEvent } from '../../types';
 import { reminderEventMap } from '../../utils/mockData';
 
 const reminderEvents: ReminderEvent[] = ['toApply', 'writtenTest', 'interview', 'toOffer'];
 
 export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const job = selectSelectedJob(useStore.getState());
-  const { updateJob, updateJobStatus, deleteJob, addToast } = useStore();
+  const { jobs, selectedJobId, updateJob, updateJobStatus, deleteJob, addToast } = useStore();
+  const job = jobs.find(j => j.id === selectedJobId);
   const [activeTab, setActiveTab] = useState<'responsibilities' | 'requirements'>('responsibilities');
   const [expandedSuggestions, setExpandedSuggestions] = useState<string[]>(['resume']);
   const [isEditing, setIsEditing] = useState(false);
@@ -51,6 +53,17 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
   }, [job]);
 
   if (!job) return null;
+
+  // 获取图标（与 JobCard 保持一致，使用 job id 哈希值）
+  const getDetailIcon = (jobId: string) => {
+    const hash = jobId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const icons = [
+      <Monitor key="monitor" size={32} className="text-[#2D2D2D]" strokeWidth={2.5} />,
+      <Briefcase key="briefcase" size={32} className="text-[#2D2D2D]" strokeWidth={2.5} />,
+      <Rocket key="rocket" size={32} className="text-[#2D2D2D]" strokeWidth={2.5} />,
+    ];
+    return icons[hash % icons.length];
+  };
 
   // 只有在设置了提醒且有截止日期时才显示倒计时
   const hasDeadline = job.hasReminder && job.position.deadline;
@@ -138,13 +151,13 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
           {/* 头部信息栏 */}
           <section className="space-y-4">
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#B5EAD7]/30 to-[#C7CEEA]/30 flex items-center justify-center flex-shrink-0">
-                <Building2 size={32} className="text-[#718096]" />
+              <div className="w-16 h-16 rounded-3xl bg-[#F9F7F2] flex items-center justify-center flex-shrink-0">
+                {getDetailIcon(job.id)}
               </div>
               <div className="flex-1">
                 {isEditing ? (
                   <div className="space-y-2">
-                    <label className="text-xs text-[#718096]">公司名称</label>
+                    <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase">公司名称</label>
                     <input
                       type="text"
                       value={editedJob?.company.name}
@@ -158,15 +171,15 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                             : null
                         )
                       }
-                      className="w-full text-xl font-bold text-[#2D3748] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:border-[#B5EAD7] outline-none"
+                      className="w-full text-xl font-black text-[#2D2D2D] bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-3 focus:border-[#2D2D2D] outline-none tracking-tight"
                     />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-xl font-bold text-[#2D3748]">{job.company.name}</h2>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="text-2xl font-black text-[#2D2D2D] tracking-tight">{job.company.name}</h2>
                     {/* 提醒事件标签 */}
                     {job.hasReminder && job.reminderEvent && (
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${reminderEventMap[job.reminderEvent].bg} ${reminderEventMap[job.reminderEvent].color}`}>
+                      <span className={`text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase ${reminderEventMap[job.reminderEvent].bg} ${reminderEventMap[job.reminderEvent].color}`}>
                         {reminderEventMap[job.reminderEvent].label}
                       </span>
                     )}
@@ -179,10 +192,10 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
             <div className="space-y-3">
               {/* 职位 */}
               <div className="flex items-center gap-3">
-                <Briefcase size={18} className="text-[#718096]" />
+                <Briefcase size={18} className="text-[#8C837A]" strokeWidth={2.5} />
                 {isEditing ? (
                   <div className="flex-1">
-                    <label className="text-xs text-[#718096] block mb-1">职位名称</label>
+                    <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">职位名称</label>
                     <input
                       type="text"
                       value={editedJob?.position.title}
@@ -196,20 +209,20 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                             : null
                         )
                       }
-                      className="w-full text-[#2D3748] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:border-[#B5EAD7] outline-none"
+                      className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
                     />
                   </div>
                 ) : (
-                  <span className="font-medium text-[#2D3748]">{job.position.title}</span>
+                  <span className="font-black text-[#2D2D2D]">{job.position.title}</span>
                 )}
               </div>
 
               {/* 薪资 */}
               <div className="flex items-center gap-3">
-                <Banknote size={18} className="text-[#B5EAD7]" />
+                <Banknote size={18} className="text-[#2D2D2D]" strokeWidth={2.5} />
                 {isEditing ? (
                   <div className="flex-1">
-                    <label className="text-xs text-[#718096] block mb-1">薪资范围</label>
+                    <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">薪资范围</label>
                     <input
                       type="text"
                       value={editedJob?.position.salary}
@@ -223,20 +236,20 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                             : null
                         )
                       }
-                      className="w-full text-[#2D3748] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:border-[#B5EAD7] outline-none"
+                      className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
                     />
                   </div>
                 ) : (
-                  <span className="font-medium text-[#2D3748]">{job.position.salary}</span>
+                  <span className="font-black text-[#2D2D2D]">{job.position.salary}</span>
                 )}
               </div>
 
               {/* 地点 */}
               <div className="flex items-center gap-3">
-                <MapPin size={18} className="text-[#718096]" />
+                <MapPin size={18} className="text-[#8C837A]" strokeWidth={2.5} />
                 {isEditing ? (
                   <div className="flex-1">
-                    <label className="text-xs text-[#718096] block mb-1">工作地点</label>
+                    <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">工作地点</label>
                     <input
                       type="text"
                       value={editedJob?.position.location}
@@ -250,20 +263,20 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                             : null
                         )
                       }
-                      className="w-full text-[#2D3748] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:border-[#B5EAD7] outline-none"
+                      className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
                     />
                   </div>
                 ) : (
-                  <span className="text-[#718096]">{job.position.location}</span>
+                  <span className="text-[#8C837A] font-medium">{job.position.location}</span>
                 )}
               </div>
 
               {/* 学历 */}
               <div className="flex items-center gap-3">
-                <GraduationCap size={18} className="text-[#C7CEEA]" />
+                <GraduationCap size={18} className="text-[#8C837A]" strokeWidth={2.5} />
                 {isEditing ? (
                   <div className="flex-1">
-                    <label className="text-xs text-[#718096] block mb-1">学历要求</label>
+                    <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">学历要求</label>
                     <input
                       type="text"
                       value={editedJob?.position.education || ''}
@@ -278,20 +291,20 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                         )
                       }
                       placeholder="如：本科及以上"
-                      className="w-full text-[#2D3748] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:border-[#B5EAD7] outline-none"
+                      className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
                     />
                   </div>
                 ) : (
-                  <span className="text-[#718096]">{job.position.education || '未设置'}</span>
+                  <span className="text-[#8C837A] font-medium">{job.position.education || '未设置'}</span>
                 )}
               </div>
 
               {/* 任职年限 */}
               <div className="flex items-center gap-3">
-                <Clock size={18} className="text-[#FFDAC1]" />
+                <Clock size={18} className="text-[#8C837A]" strokeWidth={2.5} />
                 {isEditing ? (
                   <div className="flex-1">
-                    <label className="text-xs text-[#718096] block mb-1">任职年限</label>
+                    <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">任职年限</label>
                     <input
                       type="text"
                       value={editedJob?.position.experience || ''}
@@ -306,20 +319,20 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                         )
                       }
                       placeholder="如：3-5年"
-                      className="w-full text-[#2D3748] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:border-[#B5EAD7] outline-none"
+                      className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
                     />
                   </div>
                 ) : (
-                  <span className="text-[#718096]">{job.position.experience || '未设置'}</span>
+                  <span className="text-[#8C837A] font-medium">{job.position.experience || '未设置'}</span>
                 )}
               </div>
 
-              {/* 投递/面试链接 */}
-              <div className="flex items-center gap-3">
-                <Link size={18} className="text-[#C7CEEA]" />
-                {isEditing ? (
+              {/* 投递/面试链接 - 仅在编辑模式显示 */}
+              {isEditing && (
+                <div className="flex items-center gap-3">
+                  <Link size={18} className="text-[#8C837A]" strokeWidth={2.5} />
                   <div className="flex-1">
-                    <label className="text-xs text-[#718096] block mb-1">相关链接（投递/面试等）</label>
+                    <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">官方链接（投递/面试等）</label>
                     <input
                       type="text"
                       value={editedJob?.applyLink || ''}
@@ -334,40 +347,23 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                         )
                       }
                       placeholder="https://..."
-                      className="w-full text-[#2D3748] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:border-[#B5EAD7] outline-none"
+                      className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
                     />
                   </div>
-                ) : (
-                  <div className="flex-1 flex items-center gap-2">
-                    {job.applyLink ? (
-                      <a
-                        href={job.applyLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#B5EAD7] hover:text-[#8fd9c0] hover:underline truncate flex items-center gap-1"
-                      >
-                        访问链接
-                        <ExternalLink size={14} />
-                      </a>
-                    ) : (
-                      <span className="text-[#718096]">未设置</span>
-                    )}
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* 截止日期 - 仅当有提醒时显示 */}
               {hasDeadline && daysUntil !== null && (
                 <div className="flex items-center gap-3">
-                  <Calendar size={18} className="text-[#FFDAC1]" />
+                  <Calendar size={18} className="text-[#8C837A]" strokeWidth={2.5} />
                   <div className="flex items-center gap-2">
-                    <span className="text-[#718096]">
+                    <span className="text-[#8C837A] font-medium">
                       截止：{new Date(job.position.deadline!).toLocaleDateString('zh-CN')}
                     </span>
                     <span
-                      className={`text-sm font-medium ${
-                        daysUntil <= 3 ? 'text-[#FFB7B2]' : daysUntil <= 7 ? 'text-[#FFDAC1]' : 'text-[#B5EAD7]'
-                      }`}
+                      className="text-sm font-black"
+                      style={{ color: '#2D2D2D' }}
                     >
                       ({daysUntil >= 0 ? `还剩${daysUntil}天` : `已逾期${Math.abs(daysUntil)}天`})
                     </span>
@@ -386,7 +382,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                         setIsEditing(false);
                         setEditedJob(job);
                       }}
-                      className="px-4 py-2 rounded-xl bg-gray-100 text-[#718096] text-sm font-medium"
+                      className="px-4 py-2 rounded-xl bg-[#F9F7F2] text-[#8C837A] text-sm font-black"
                     >
                       取消
                     </motion.button>
@@ -394,7 +390,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleSaveEdit}
-                      className="px-4 py-2 rounded-xl bg-[#B5EAD7] text-[#2D3748] text-sm font-medium"
+                      className="px-4 py-2 rounded-xl bg-[#2D2D2D] text-white text-sm font-black"
                     >
                       保存
                     </motion.button>
@@ -404,7 +400,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 rounded-xl bg-gray-100 text-[#718096] text-sm font-medium hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 rounded-xl bg-[#F9F7F2] text-[#8C837A] text-sm font-black hover:bg-[#EFECE6] transition-colors"
                   >
                     编辑信息
                   </motion.button>
@@ -413,13 +409,13 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsReminderModalOpen(true)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition-colors ${
+                  className={`px-4 py-2 rounded-xl text-sm font-black flex items-center gap-2 transition-colors ${
                     job.hasReminder
-                      ? 'bg-[#FFDAC1]/30 text-[#2D3748]'
-                      : 'bg-[#FFDAC1]/20 text-[#2D3748]'
+                      ? 'bg-[#FFEDD8] text-[#2D2D2D]'
+                      : 'bg-[#F9F7F2] text-[#8C837A]'
                   }`}
                 >
-                  <Bell size={16} className={job.hasReminder ? 'text-[#FF9AA2]' : ''} />
+                  <Bell size={16} className={job.hasReminder ? 'text-[#2D2D2D]' : ''} strokeWidth={2.5} />
                   设置提醒
                 </motion.button>
                 {job.hasReminder && (
@@ -427,7 +423,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleCancelReminder}
-                    className="px-4 py-2 rounded-xl bg-gray-100 text-[#718096] text-sm font-medium hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 rounded-xl bg-[#F9F7F2] text-[#8C837A] text-sm font-black hover:bg-[#EFECE6] transition-colors"
                   >
                     取消提醒
                   </motion.button>
@@ -437,9 +433,9 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsDeleteModalOpen(true)}
-                  className="px-4 py-2 rounded-xl bg-red-100 text-red-600 text-sm font-medium hover:bg-red-200 transition-colors ml-auto"
+                  className="px-4 py-2 rounded-xl bg-[#FDE2E4] text-[#2D2D2D] text-sm font-black hover:bg-[#FDE2E4]/80 transition-colors ml-auto"
                 >
-                  <Trash2 size={16} className="inline mr-1" />
+                  <Trash2 size={16} className="inline mr-1" strokeWidth={2.5} />
                   删除
                 </motion.button>
               </div>
@@ -447,10 +443,10 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
           </section>
 
           {/* AI 提炼区 */}
-          <section className="border-l-4 border-[#B5EAD7] pl-4 py-2">
-            <h3 className="text-lg font-semibold text-[#2D3748] mb-4 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-[#B5EAD7]/20 flex items-center justify-center">
-                <span className="text-xs">AI</span>
+          <section className="border-l-4 border-[#EAF4F4] pl-4 py-2">
+            <h3 className="text-lg font-black text-[#2D2D2D] mb-4 flex items-center gap-2 tracking-tight">
+              <span className="w-6 h-6 rounded-full bg-[#EAF4F4] flex items-center justify-center text-xs font-black">
+                AI
               </span>
               智能分析
             </h3>
@@ -461,10 +457,10 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab('responsibilities')}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-colors tracking-wider uppercase ${
                   activeTab === 'responsibilities'
-                    ? 'bg-[#B5EAD7] text-[#2D3748]'
-                    : 'bg-gray-100 text-[#718096]'
+                    ? 'bg-[#2D2D2D] text-white'
+                    : 'bg-[#F9F7F2] text-[#8C837A]'
                 }`}
               >
                 岗位职责
@@ -473,10 +469,10 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab('requirements')}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-colors tracking-wider uppercase ${
                   activeTab === 'requirements'
-                    ? 'bg-[#B5EAD7] text-[#2D3748]'
-                    : 'bg-gray-100 text-[#718096]'
+                    ? 'bg-[#2D2D2D] text-white'
+                    : 'bg-[#F9F7F2] text-[#8C837A]'
                 }`}
               >
                 岗位要求
@@ -504,8 +500,8 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                     transition={{ delay: index * 0.05 }}
                     className="flex items-start gap-3"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#B5EAD7] mt-2 flex-shrink-0" />
-                    <span className="text-[#2D3748] leading-relaxed">{item}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#2D2D2D] mt-2 flex-shrink-0" />
+                    <span className="text-[#2D2D2D] leading-relaxed font-medium">{item}</span>
                   </motion.div>
                 ))}
               </motion.div>
@@ -513,8 +509,8 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
           </section>
 
           {/* 求职建议区 */}
-          <section className="border-l-4 border-[#E2F0CB] pl-4 py-2">
-            <h3 className="text-lg font-semibold text-[#2D3748] mb-4">求职建议</h3>
+          <section className="border-l-4 border-[#FFEDD8] pl-4 py-2">
+            <h3 className="text-lg font-black text-[#2D2D2D] mb-4 tracking-tight">求职建议</h3>
 
             <div className="space-y-3">
               {suggestionSections.map((section) => {
@@ -525,23 +521,23 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                   <motion.div
                     key={section.key}
                     initial={false}
-                    className="bg-gray-50 rounded-xl overflow-hidden"
+                    className="bg-[#F9F7F2] rounded-2xl overflow-hidden"
                   >
                     <motion.button
                       onClick={() => toggleSuggestion(section.key)}
                       className="w-full flex items-center justify-between p-4 text-left"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-                          <Icon size={18} className="text-[#718096]" />
+                        <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center">
+                          <Icon size={18} className="text-[#2D2D2D]" strokeWidth={2.5} />
                         </div>
-                        <span className="font-medium text-[#2D3748]">{section.title}</span>
+                        <span className="font-black text-[#2D2D2D] tracking-tight">{section.title}</span>
                       </div>
                       <motion.div
                         animate={{ rotate: isExpanded ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <ChevronDown size={20} className="text-[#718096]" />
+                        <ChevronDown size={20} className="text-[#8C837A]" strokeWidth={2.5} />
                       </motion.div>
                     </motion.button>
 
@@ -554,9 +550,15 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                           transition={{ duration: 0.2 }}
                         >
                           <div className="px-4 pb-4">
-                            <p className="text-sm text-[#718096] leading-relaxed pl-11">
-                              {section.content}
-                            </p>
+                            <div className="text-sm text-[#8C837A] leading-relaxed space-y-2 font-medium">
+                              {section.content.split('\n').map((line, idx) => (
+                                line.trim() && (
+                                  <p key={idx} className={line.startsWith('•') ? '' : 'pl-3'}>
+                                    {line}
+                                  </p>
+                                )
+                              ))}
+                            </div>
                           </div>
                         </motion.div>
                       )}
@@ -568,15 +570,15 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
           </section>
 
           {/* 底部操作栏 */}
-          <section className="sticky bottom-0 bg-white/80 backdrop-blur-md -mx-6 -mb-6 p-6 border-t border-gray-100">
+          <section className="sticky bottom-0 bg-white -mx-6 -mb-6 p-6 border-t border-[#EFECE6]">
             <div className="space-y-4">
               {/* 状态选择器 */}
               <div>
-                <label className="block text-sm font-medium text-[#718096] mb-2">求职状态</label>
+                <label className="block text-xs font-black text-[#8C837A] tracking-widest uppercase mb-2">求职状态</label>
                 <StatusSelector currentStatus={job.position.status} onChange={handleStatusChange} />
               </div>
 
-              {/* 投递按钮 */}
+              {/* 去官方按钮 */}
               {job.applyLink && (
                 <motion.a
                   href={job.applyLink}
@@ -584,10 +586,10 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#B5EAD7] text-[#2D3748] font-semibold hover:bg-[#a5e0c9] transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-[#2D2D2D] text-white font-black hover:bg-[#2D2D2D]/90 transition-colors"
                 >
-                  <ExternalLink size={18} />
-                  去投递
+                  <ExternalLink size={18} strokeWidth={2.5} />
+                  去官方
                 </motion.a>
               )}
             </div>
@@ -604,7 +606,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
         <div className="space-y-4">
           {/* 事件选择 */}
           <div>
-            <label className="block text-sm font-medium text-[#2D3748] mb-2">事件类型</label>
+            <label className="block text-xs font-black text-[#8C837A] tracking-widest uppercase mb-2">事件类型</label>
             <div className="grid grid-cols-2 gap-2">
               {reminderEvents.map((event) => {
                 const config = reminderEventMap[event];
@@ -615,10 +617,10 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setSelectedEvent(event)}
-                    className={`px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                    className={`px-3 py-2 rounded-xl text-xs font-black transition-all tracking-wider uppercase ${
                       isSelected
                         ? `${config.bg} ${config.color} shadow-sm`
-                        : 'bg-gray-100 text-[#718096] hover:bg-gray-200'
+                        : 'bg-[#F9F7F2] text-[#8C837A] hover:bg-[#EFECE6]'
                     }`}
                   >
                     {config.label}
@@ -630,12 +632,12 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
 
           {/* 截止日期选择 */}
           <div>
-            <label className="block text-sm font-medium text-[#2D3748] mb-2">截止日期</label>
+            <label className="block text-xs font-black text-[#8C837A] tracking-widest uppercase mb-2">截止日期</label>
             <input
               type="date"
               value={reminderDate}
               onChange={(e) => setReminderDate(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#B5EAD7] focus:ring-2 focus:ring-[#B5EAD7]/20 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#F9F7F2] border border-[#EFECE6] focus:border-[#2D2D2D] focus:ring-2 focus:ring-[#2D2D2D]/10 outline-none transition-all font-black text-[#2D2D2D]"
             />
           </div>
 
@@ -644,7 +646,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsReminderModalOpen(false)}
-              className="flex-1 px-4 py-3 rounded-xl bg-gray-100 text-[#718096] font-medium hover:bg-gray-200 transition-colors"
+              className="flex-1 px-4 py-3 rounded-2xl bg-[#F9F7F2] text-[#8C837A] font-black hover:bg-[#EFECE6] transition-colors"
             >
               取消
             </motion.button>
@@ -653,7 +655,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
               whileTap={{ scale: 0.98 }}
               onClick={handleSetReminder}
               disabled={!reminderDate}
-              className="flex-1 px-4 py-3 rounded-xl bg-[#B5EAD7] text-[#2D3748] font-medium hover:bg-[#a5e0c9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-3 rounded-2xl bg-[#2D2D2D] text-white font-black hover:bg-[#2D2D2D]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               设置提醒
             </motion.button>
@@ -668,7 +670,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
         title="删除职位"
       >
         <div className="space-y-4">
-          <p className="text-[#718096]">
+          <p className="text-[#8C837A] font-medium">
             确定要删除「{job.company.name} - {job.position.title}」吗？
             <br />
             此操作不可撤销。
@@ -678,7 +680,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsDeleteModalOpen(false)}
-              className="flex-1 px-4 py-3 rounded-xl bg-gray-100 text-[#718096] font-medium hover:bg-gray-200 transition-colors"
+              className="flex-1 px-4 py-3 rounded-2xl bg-[#F9F7F2] text-[#8C837A] font-black hover:bg-[#EFECE6] transition-colors"
             >
               取消
             </motion.button>
@@ -686,7 +688,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleDeleteJob}
-              className="flex-1 px-4 py-3 rounded-xl bg-red-100 text-red-600 font-medium hover:bg-red-200 transition-colors"
+              className="flex-1 px-4 py-3 rounded-2xl bg-[#FDE2E4] text-[#2D2D2D] font-black hover:bg-[#FDE2E4]/80 transition-colors"
             >
               删除
             </motion.button>

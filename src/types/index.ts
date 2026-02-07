@@ -57,7 +57,8 @@ export interface JobCard {
   position: Position;
   aiAnalysis: AIAnalysis;
   createdAt: number;
-  applyLink?: string;
+  applyLink?: string;      // 收藏页的投递/面试链接
+  scheduleLink?: string;    // 日程页的面试/笔试/offer链接（独立于收藏）
   hasReminder?: boolean;   // 是否设置了提醒
   reminderEvent?: ReminderEvent; // 提醒事件类型
   isArchived?: boolean;    // 是否已完结归档
@@ -83,8 +84,14 @@ export interface AIMessage {
   image?: string;          // 用户上传的图片 base64
 }
 
-// 日程筛选类型
-export type ScheduleFilter = 'all' | 'urgent' | 'week' | 'overdue' | 'archived';
+// 事件类型筛选
+export type EventTypeFilter = 'all' | 'toApply' | 'writtenTest' | 'interview' | 'toOffer';
+
+// 紧急程度筛选
+export type UrgencyFilter = 'all' | 'urgent' | 'week' | 'overdue';
+
+// 日程筛选类型（兼容旧代码）
+export type ScheduleFilter = EventTypeFilter | UrgencyFilter;
 
 // Toast 通知
 export interface Toast {
@@ -118,4 +125,12 @@ export interface RegisterForm {
   email: string;
   password: string;
   confirmPassword: string;
+}
+
+// AI 对话会话
+export interface ChatSession {
+  id: string;
+  title: string;
+  messages: AIMessage[];
+  updatedAt: number;
 }

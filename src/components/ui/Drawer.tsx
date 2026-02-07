@@ -76,24 +76,24 @@ export function Drawer({
               y: isRight ? 0 : '100%',
             }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className={`fixed z-[70] bg-white/95 backdrop-blur-xl shadow-2xl border border-white/50 overflow-hidden ${
+            className={`fixed z-[70] bg-white shadow-2xl border border-[#EFECE6] overflow-hidden ${
               isRight
-                ? `right-0 top-0 bottom-0 ${width}`
+                ? `right-0 top-0 bottom-0 ${width} rounded-l-3xl`
                 : `bottom-0 left-0 right-0 h-[85vh] rounded-t-3xl`
             }`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-10">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#EFECE6] sticky top-0 bg-white z-10">
               {title ? (
-                <h2 className="text-lg font-semibold text-[#2D3748]">{title}</h2>
+                <h2 className="text-xl font-black text-[#2D2D2D] tracking-tight">{title}</h2>
               ) : (
                 <div />
               )}
               <button
                 onClick={onClose}
-                className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-[#F9F7F2] transition-colors"
               >
-                <X size={20} className="text-[#718096]" />
+                <X size={20} className="text-[#8C837A]" strokeWidth={2.5} />
               </button>
             </div>
 

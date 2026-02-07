@@ -8,10 +8,10 @@ interface CompanyTagProps {
 
 export function CompanyTag({ type, size = 'sm' }: CompanyTagProps) {
   const config = companyTypeMap[type];
-  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm';
+  const sizeClasses = size === 'sm' ? 'px-2.5 py-1 text-[10px] tracking-widest uppercase' : 'px-3 py-1 text-xs tracking-wider uppercase';
 
   return (
-    <span className={`inline-flex items-center rounded-full font-medium ${config.color} ${sizeClasses}`}>
+    <span className={`inline-flex items-center rounded-full font-black ${config.color} ${sizeClasses}`}>
       {config.label}
     </span>
   );

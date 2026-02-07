@@ -6,11 +6,11 @@ const DOUBAO_API_URL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completion
 
 // 使用支持视觉的模型 - 需要开通服务
 const DOUBAO_VISION_MODEL = 'doubao-1.5-vision-pro-32k-250115';
-// 纯文本模型作为备选
-const DOUBAO_TEXT_MODEL = 'doubao-pro-32k-241215';
+// 纯文本模型 - 使用 doubao-1.5-pro-32k (需要开通)
+const DOUBAO_TEXT_MODEL = 'doubao-1.5-pro-32k-250115';
 
 // 系统提示词 - 定义 AI 的角色和输出格式
-const SYSTEM_PROMPT = `你是一位专业的求职助手，擅长从职位描述中提取结构化信息并提供求职建议。
+const SYSTEM_PROMPT_PART1 = `你是一位专业的求职助手，擅长从职位描述中提取结构化信息并提供求职建议。
 
 请根据用户提供的职位描述，提取以下信息并以 JSON 格式返回：
 
@@ -37,10 +37,138 @@ const SYSTEM_PROMPT = `你是一位专业的求职助手，擅长从职位描述
   }
 }
 
-重要规则：
-1. 只基于用户提供的实际信息提取，不要编造任何内容
-2. 如果某字段在JD中未提及，返回空字符串或空数组
-3. 返回的必须是合法的 JSON 格式，不要包含任何其他文字`;
+【关键处理规则】
+
+1. **岗位信息处理（岗位职责和任职要求）- 严格规则**:
+   - **第一步 - 识别分点**: 仔细识别原文中的所有分点，包括以数字（1、2、3...）、中文数字（一、二、三...）、符号（-、•、*、·）或序号（1.、（1）、①等）开头的项目
+   - **第二步 - 统计数量**: 必须准确统计原文中"岗位职责"和"任职要求"各自的分点总数
+   - **第三步 - 逐条处理**: 
+     * 对每一个分点单独处理，判断是否需要精炼
+     * 如果分点冗长（超过50字）、表述啰嗦、存在语病 → 进行精炼总结
+     * 如果分点简短（50字以内）、表述清晰 → 保留原表达
+   - **第四步 - 严格输出要求**:
+     * **数量严格一致**: 输出数组的长度必须与原文分点数量完全相同，绝对禁止删除、合并或跳过任何分点
+     * **顺序严格一致**: 输出数组的顺序必须与原文分点顺序完全一致
+     * **逐条对应**: 输出数组的第N个元素必须对应原文的第N个分点
+     * 例如：原文有4条职责，输出数组必须有4个元素，且第1个对第1条，第2个对第2条，以此类推
+   - **精炼总结标准**:
+     * 保留原分点的所有核心信息点
+     * 使用专业、简练的语言，去除口语化和冗余
+     * 保持专业术语准确性
+   - **验证步骤**: 输出前必须核对：数组长度 == 原文分点数量，如不等则重新处理
+
+2. **纯文本信息提取**:
+   - 使用关键词定位法提取结构化信息：
+     - 公司名称: 查找"公司"、"企业"、"集团"等关键词附近的主体名称
+     - 职位名称: 查找"岗位"、"职位"、"招聘"后的具体职称，或技术栈+职位组合（如"Java工程师"）
+     - 薪资: 查找数字+货币单位（k/万/元）+范围符号（-/~）的模式
+     - 地点: 查找城市名（北京、上海、深圳等）或"工作地点"后的内容
+     - 学历: 查找"本科"、"硕士"、"博士"、"大专"等关键词
+     - 经验: 查找数字+"年"+"经验/工作年限"的模式
+   - 对于岗位职责和任职要求，先定位"职责"、"要求"、"任职"、"岗位内容"等标题，再提取其下的列表项
+
+3. **求职建议生成 - 严格规则**:
+   - **核心原则**: 每条建议必须基于JD中的具体要求，给出可执行的策略
+   - **格式要求**:
+     * 使用分点陈述，每个建议独立成点
+     * 每条建议格式：直接引用JD原文或核心要求 → 给出具体执行策略
+     * 去掉"JD要求"等前缀，直接表述
+     * 每个分点之间用换行符(\n)分隔
+   - **简历优化建议**:
+     * 分析JD中的核心技能、工具、经验要求
+     * 针对每条要求，建议如何在简历中体现（具体写法、位置、量化方式）
+     * 示例格式："'精通excel各类公式及功能' → 在技能栏明确列出'Excel(数据透视表/VLOOKUP/宏)'，并在项目经历中补充使用Excel处理数据的具体案例"
+   - **面试准备建议**:
+     * 基于JD中的工作内容和技术要求，列出可能的面试问题
+     * 针对每个问题，建议准备的具体案例或回答思路
+     * 示例格式："'策略设计、策略配置' → 准备1个完整的策略运营案例，阐述从需求分析→策略设计→落地执行→效果复盘的全流程"
+   - **薪资谈判建议**:
+     * 基于JD中的薪资范围、岗位级别、公司类型给出定位
+     * 分析可谈判的维度（base薪资、绩效、期权、补贴、晋升周期等）
+     * 给出具体的谈判时机和话术建议
+     * 示例格式："实习岗位未明确薪资 → 提前了解该公司实习薪资区间(可通过脉脉/牛客网查询)，若低于市场水平可强调自身数据分析技能稀缺性争取更高待遇"
+   - **输出格式**: 
+     * 每条建议用"•"开头
+     * 引用JD原文 → 具体策略（用箭头连接）
+     * 每个分点占一行，分点之间用\n\n换行
+     * 不要加"JD要求"、"JD涉及"等前缀
+
+4. **通用规则**:
+   - 只基于用户提供的实际信息提取，不要编造任何内容
+   - 如果某字段在JD中未提及，返回空字符串或空数组
+   - 返回的必须是合法的 JSON 格式，不要包含任何其他文字
+   - 确保所有中文编码正确，不出现乱码
+
+【学习示例】
+以下是一个正确的提取示例，请学习其提取逻辑：`;
+
+const SYSTEM_PROMPT_EXAMPLE_INPUT = `
+输入文本：
+【工作内容】
+1、协助推进策略的落地执行，包括策略设计、策略配置、策略审核、策略费用测算及策略复盘等；
+2、对业务数据进行分析处理，可制作excel的可视化看板，产出有效的结论；
+3、对于省内其他部门提供相应的支持，包括数据需求支持、协同支持等；
+4、协助进行内部项目管理，支持团队日常日常工作；
+
+【任职要求】
+1、国家统招全日制研究生及以上，有经济学、计算机、统计学等专业背景优先；
+2、实习6个月以上，一周到岗五天，仅接受西安线下办公。
+3、可以熟练应用各种办公软件，尤其是excel，各类公式及功能均需相对精通。PPT，Word需熟练应用，sql需可进行数据提取类代码编写；
+4、具备较强的沟通能力、业务推进和资源整合能力，能快速学习、灵活分析；
+5、有数据分析实习实验、互联网运营实习经验优先。`;
+
+const SYSTEM_PROMPT_EXAMPLE_OUTPUT = `
+正确输出：
+{
+  "company": {
+    "name": "",
+    "type": "其他"
+  },
+  "position": {
+    "title": "",
+    "salary": "",
+    "location": "西安",
+    "education": "研究生及以上",
+    "experience": "实习6个月以上"
+  },
+  "aiAnalysis": {
+    "responsibilities": [
+      "协助推进策略的落地执行，包括策略设计、策略配置、策略审核、策略费用测算及策略复盘",
+      "对业务数据进行分析处理，制作excel可视化看板，产出有效结论",
+      "对省内其他部门提供支持，包括数据需求支持、协同支持",
+      "协助进行内部项目管理，支持团队日常工作"
+    ],
+    "requirements": [
+      "国家统招全日制研究生及以上，经济学、计算机、统计学等专业背景优先",
+      "实习6个月以上，一周到岗五天，仅接受西安线下办公",
+      "熟练应用办公软件，精通excel各类公式及功能，熟练应用PPT、Word，可进行sql数据提取代码编写",
+      "具备较强的沟通能力、业务推进和资源整合能力，能快速学习、灵活分析",
+      "有数据分析实习经验、互联网运营实习经验优先"
+    ],
+    "suggestions": {
+      "resume": "• '精通excel各类公式及功能，熟练应用PPT、Word，可进行sql数据提取' → 在技能栏明确列出'Excel(数据透视表/VLOOKUP/宏)、SQL数据提取、PPT可视化'，并在项目经历中补充使用Excel制作数据看板的具体案例，量化处理的数据量级\\n\\n• '具备较强的沟通能力、业务推进和资源整合能力' → 在项目描述中加入跨部门协作的具体场景，如'协调产品、技术部门完成XX项目，推动策略落地，节省成本XX%'",
+      "interview": "• '策略设计、策略配置、策略审核' → 准备1-2个策略运营案例，阐述从需求分析→策略设计→落地执行→效果复盘的全流程，重点说明如何衡量策略效果\\n\\n• '熟练应用各种办公软件，尤其是excel' → 准备Excel技能演示，包括数据透视表制作、VLOOKUP应用、简单宏编写等，可携带过往制作的Excel作品",
+      "negotiation": "• 实习岗位未明确薪资范围 → 提前了解该公司实习薪资区间(可通过脉脉/牛客网查询)，若低于市场水平可强调自身数据分析技能稀缺性争取更高待遇\\n\\n• '实习6个月以上，一周到岗五天' → 在薪资谈判时可询问是否有转正机会及转正后的薪资涨幅，同时了解团队的培养机制和晋升路径，作为是否接受offer的重要参考"
+    }
+  }
+}`;
+
+const SYSTEM_PROMPT_PART2 = `
+提取要点：
+- 识别【工作内容】和【任职要求】作为分点标题
+- 以数字序号（1、2、3...）识别每个分点
+- 职责提取4条，要求提取5条，数量严格对应
+- 地点从"西安线下办公"提取，学历从"研究生及以上"提取，经验从"实习6个月以上"提取
+
+建议输出格式要点：
+- resume/interview/negotiation 每个字段包含2-3条具体建议
+- 每条建议格式："• '引用原文' → 具体执行策略"
+- 直接引用JD原文，去掉"JD要求"等前缀
+- 每个分点占一行，分点之间用\\n\\n换行
+- 具体建议必须详细、可操作，避免泛泛而谈`;
+
+// 组合完整的系统提示词
+const SYSTEM_PROMPT = SYSTEM_PROMPT_PART1 + SYSTEM_PROMPT_EXAMPLE_INPUT + SYSTEM_PROMPT_EXAMPLE_OUTPUT + SYSTEM_PROMPT_PART2;
 
 // 图片消息内容项
 interface ImageContentItem {
@@ -130,7 +258,8 @@ export async function parseJobWithDoubao(
       });
     }
 
-    console.log('发送请求到豆包 API:', { model, hasImage });
+    console.log('发送请求到豆包 API:', { model, hasImage, apiKey: DOUBAO_API_KEY ? '已配置' : '未配置' });
+    console.log('请求消息:', JSON.stringify(messages, null, 2).substring(0, 500));
 
     const response = await fetch(DOUBAO_API_URL, {
       method: 'POST',
@@ -147,6 +276,7 @@ export async function parseJobWithDoubao(
     });
 
     const responseData: DoubaoResponseType = await response.json();
+    console.log('API 原始响应:', JSON.stringify(responseData, null, 2).substring(0, 1000));
 
     if (!response.ok) {
       console.error('豆包 API 调用失败:', response.status, responseData);
@@ -160,15 +290,19 @@ export async function parseJobWithDoubao(
     }
 
     const content = responseData.choices?.[0]?.message?.content || '';
-    console.log('豆包 API 响应内容:', content.substring(0, 200));
+    console.log('豆包 API 完整响应内容:', content);
+    console.log('响应内容长度:', content.length);
 
     // 解析 JSON 响应
     const parsedData = extractJsonFromResponse(content);
+    console.log('解析后的数据:', parsedData);
 
     if (parsedData) {
+      console.log('成功解析 JSON，返回格式化数据');
       return formatJobData(parsedData);
     } else {
       console.warn('无法从响应中解析 JSON，使用模拟数据');
+      console.log('尝试解析的原始内容:', content);
       return simulateParseJob(text);
     }
   } catch (error) {
@@ -182,32 +316,54 @@ export async function parseJobWithDoubao(
  * 从 AI 响应中提取 JSON 数据
  */
 function extractJsonFromResponse(content: string): any | null {
-  if (!content) return null;
+  if (!content) {
+    console.log('响应内容为空');
+    return null;
+  }
+
+  console.log('尝试解析响应内容，长度:', content.length);
 
   try {
     // 尝试直接解析
+    console.log('尝试直接解析 JSON...');
     return JSON.parse(content);
-  } catch {
+  } catch (e) {
+    console.log('直接解析失败:', (e as Error).message);
+
     // 尝试从 markdown 代码块中提取
+    console.log('尝试从 markdown 代码块中提取...');
     const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) {
+      console.log('找到 markdown 代码块，内容长度:', jsonMatch[1].length);
       try {
         return JSON.parse(jsonMatch[1].trim());
-      } catch {
-        // 继续尝试其他方法
+      } catch (e) {
+        console.log('markdown 代码块解析失败:', (e as Error).message);
       }
     }
 
     // 尝试查找 JSON 对象（匹配最外层的大括号）
+    console.log('尝试查找 JSON 对象...');
+    // 使用非贪婪匹配找到第一个 { 和最后一个 } 之间的内容
     const objectMatch = content.match(/\{[\s\S]*\}/);
     if (objectMatch) {
+      console.log('找到 JSON 对象，长度:', objectMatch[0].length);
       try {
         return JSON.parse(objectMatch[0]);
-      } catch {
-        // 解析失败
+      } catch (e) {
+        console.log('JSON 对象解析失败:', (e as Error).message);
+        // 尝试修复常见的 JSON 格式问题
+        try {
+          // 尝试去除可能的注释
+          const cleaned = objectMatch[0].replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+          return JSON.parse(cleaned);
+        } catch (e2) {
+          console.log('清理后解析也失败:', (e2 as Error).message);
+        }
       }
     }
   }
+  console.log('所有解析方法都失败');
   return null;
 }
 

@@ -62,11 +62,12 @@ export function CountdownRing({ days, size = 48, strokeWidth = 4 }: CountdownRin
           key={days}
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className={`text-sm font-bold ${isUrgent ? 'text-[#FFB7B2]' : 'text-[#2D3748]'}`}
+          className="text-sm font-bold"
+          style={{ color: '#2D2D2D' }}
         >
           {days > 99 ? '99+' : Math.max(0, days)}
         </motion.span>
-        <span className="text-[8px] text-[#718096]">天</span>
+        <span className="text-[8px]" style={{ color: '#2D2D2D' }}>天</span>
       </div>
 
       {/* 紧急脉冲动画 */}

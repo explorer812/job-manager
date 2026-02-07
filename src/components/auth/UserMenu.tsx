@@ -33,11 +33,10 @@ export function UserMenu() {
   // 生成头像背景色
   const getAvatarColor = (name: string) => {
     const colors = [
-      'from-[#B5EAD7] to-[#C7CEEA]',
-      'from-[#FFD1DC] to-[#FFB6A3]',
-      'from-[#C7CEEA] to-[#B5EAD7]',
-      'from-[#FFB6A3] to-[#FFD1DC]',
-      'from-[#B5EAD7] to-[#FFD1DC]',
+      'from-[#FDE2E4] to-[#FDE2E4]',
+      'from-[#FFEDD8] to-[#FFEDD8]',
+      'from-[#E2EAFC] to-[#E2EAFC]',
+      'from-[#EAF4F4] to-[#EAF4F4]',
     ];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
@@ -48,31 +47,31 @@ export function UserMenu() {
     return name.charAt(0).toUpperCase();
   };
 
-  // 未登录状态
+  // 未登录状态 - 奶油风设计
   if (!user) {
     return (
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsLoginModalOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#B5EAD7]/20 to-[#C7CEEA]/20 hover:from-[#B5EAD7]/30 hover:to-[#C7CEEA]/30 rounded-full transition-all"
+        className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-[#EFECE6] shadow-sm hover:shadow-md transition-all"
       >
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B5EAD7] to-[#C7CEEA] flex items-center justify-center">
-          <User size={16} className="text-white" />
+        <div className="w-8 h-8 rounded-full bg-[#F9F7F2] flex items-center justify-center">
+          <User size={16} className="text-[#8C837A]" strokeWidth={2.5} />
         </div>
-        <span className="text-sm font-medium text-[#2D3748]">登录 / 注册</span>
+        <span className="text-sm font-black text-[#2D2D2D] tracking-tight">登录 / 注册</span>
       </motion.button>
     );
   }
 
-  // 已登录状态
+  // 已登录状态 - 奶油风设计
   return (
     <div ref={menuRef} className="relative">
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-gray-50 rounded-full transition-all border border-gray-100"
+        className="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-[#F9F7F2] rounded-full transition-all border border-[#EFECE6] shadow-sm"
       >
         {/* 头像 */}
         {user.avatar ? (
@@ -94,7 +93,7 @@ export function UserMenu() {
         )}
 
         {/* 昵称 */}
-        <span className="text-sm font-medium text-[#2D3748] max-w-[80px] truncate hidden sm:block">
+        <span className="text-sm font-black text-[#2D2D2D] max-w-[80px] truncate hidden sm:block tracking-tight">
           {user.nickname}
         </span>
 
@@ -103,11 +102,11 @@ export function UserMenu() {
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown size={16} className="text-[#718096]" />
+          <ChevronDown size={16} className="text-[#8C837A]" strokeWidth={2.5} />
         </motion.div>
       </motion.button>
 
-      {/* 下拉菜单 */}
+      {/* 下拉菜单 - 奶油风设计 */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -115,12 +114,12 @@ export function UserMenu() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden z-50"
+            className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-lg border border-[#EFECE6] overflow-hidden z-50"
           >
             {/* 用户信息 */}
-            <div className="px-4 py-3 bg-gradient-to-r from-[#B5EAD7]/10 to-[#C7CEEA]/10 border-b border-gray-100">
-              <p className="text-sm font-medium text-[#2D3748]">{user.nickname}</p>
-              <p className="text-xs text-[#718096] truncate">{user.email}</p>
+            <div className="px-4 py-3 bg-[#F9F7F2] border-b border-[#EFECE6]">
+              <p className="text-sm font-black text-[#2D2D2D] tracking-tight">{user.nickname}</p>
+              <p className="text-xs text-[#8C837A] truncate font-medium">{user.email}</p>
             </div>
 
             {/* 菜单项 */}
@@ -130,17 +129,17 @@ export function UserMenu() {
                   setIsOpen(false);
                   setIsSettingsModalOpen(true);
                 }}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#2D3748] hover:bg-gray-50 rounded-xl transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#2D2D2D] hover:bg-[#F9F7F2] rounded-xl transition-colors font-black"
               >
-                <Settings size={16} className="text-[#718096]" />
+                <Settings size={16} className="text-[#8C837A]" strokeWidth={2.5} />
                 账号设置
               </button>
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#2D2D2D] hover:bg-[#FDE2E4]/50 rounded-xl transition-colors font-black"
               >
-                <LogOut size={16} />
+                <LogOut size={16} className="text-[#8C837A]" strokeWidth={2.5} />
                 退出登录
               </button>
             </div>

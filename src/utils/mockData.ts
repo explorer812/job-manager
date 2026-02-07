@@ -372,26 +372,27 @@ export const colorMap: Record<string, { bg: string; text: string; border: string
 };
 
 // 状态映射 - 柔和配色
+// 状态映射 - 奶油风配色
 export const statusMap: Record<string, { label: string; color: string; bg: string }> = {
-  new: { label: '新收藏', color: 'text-[#1A1A2E]', bg: 'bg-[#E8E8EC]' },
-  inProgress: { label: '进行中', color: 'text-[#0D9488]', bg: 'bg-[#CCFBF1]' },
-  offer: { label: '已offer', color: 'text-[#C2410C]', bg: 'bg-[#FFEDD5]' },
-  rejected: { label: '已挂', color: 'text-[#6B7280]', bg: 'bg-[#F3F4F6]' },
+  new: { label: '新收藏', color: 'text-[#2D2D2D]', bg: 'bg-[#F9F7F2]' },
+  inProgress: { label: '进行中', color: 'text-[#2D2D2D]', bg: 'bg-[#EAF4F4]' },
+  offer: { label: '已offer', color: 'text-[#2D2D2D]', bg: 'bg-[#FFEDD8]' },
+  rejected: { label: '已挂', color: 'text-[#8C837A]', bg: 'bg-[#EFECE6]' },
 };
 
-// 提醒事件映射
+// 提醒事件映射 - 统一深色背景
 export const reminderEventMap: Record<string, { label: string; color: string; bg: string }> = {
-  toApply: { label: '待投递', color: 'text-[#E2F0CB]', bg: 'bg-[#E2F0CB]/20' },
-  writtenTest: { label: '待笔试', color: 'text-[#FFDAC1]', bg: 'bg-[#FFDAC1]/20' },
-  interview: { label: '待面试', color: 'text-[#B5EAD7]', bg: 'bg-[#B5EAD7]/20' },
-  toOffer: { label: '待接受', color: 'text-[#FFB7B2]', bg: 'bg-[#FFB7B2]/20' },
+  toApply: { label: '待投递', color: 'text-white', bg: 'bg-[#2D2D2D]' },
+  writtenTest: { label: '待笔试', color: 'text-white', bg: 'bg-[#2D2D2D]' },
+  interview: { label: '待面试', color: 'text-white', bg: 'bg-[#2D2D2D]' },
+  toOffer: { label: '待接受', color: 'text-white', bg: 'bg-[#2D2D2D]' },
 };
 
-// 公司类型映射
+// 公司类型映射 - 奶油风配色
 export const companyTypeMap: Record<string, { label: string; color: string }> = {
-  '互联网': { label: '互联网', color: 'bg-blue-100 text-blue-700' },
-  '国企': { label: '国企', color: 'bg-red-100 text-red-700' },
-  '外企': { label: '外企', color: 'bg-purple-100 text-purple-700' },
-  '金融': { label: '金融', color: 'bg-green-100 text-green-700' },
-  '其他': { label: '其他', color: 'bg-gray-100 text-gray-700' },
+  '互联网': { label: '互联网', color: 'bg-[#E2EAFC] text-[#2D2D2D]' },
+  '国企': { label: '国企', color: 'bg-[#FDE2E4] text-[#2D2D2D]' },
+  '外企': { label: '外企', color: 'bg-[#FFEDD8] text-[#2D2D2D]' },
+  '金融': { label: '金融', color: 'bg-[#EAF4F4] text-[#2D2D2D]' },
+  '其他': { label: '其他', color: 'bg-[#EFECE6] text-[#8C837A]' },
 };

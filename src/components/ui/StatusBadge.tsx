@@ -12,8 +12,8 @@ interface StatusBadgeProps {
 export function StatusBadge({ status, size = 'sm', onClick, clickable = false }: StatusBadgeProps) {
   const config = statusMap[status];
   const sizeClasses = size === 'sm' 
-    ? 'px-3 py-1.5 text-xs' 
-    : 'px-4 py-2 text-sm';
+    ? 'px-3 py-1.5 text-[10px] tracking-widest uppercase' 
+    : 'px-4 py-2 text-xs tracking-wider uppercase';
 
   return (
     <motion.span
@@ -21,7 +21,7 @@ export function StatusBadge({ status, size = 'sm', onClick, clickable = false }:
       whileTap={clickable ? { scale: 0.95 } : undefined}
       onClick={onClick}
       className={`
-        inline-flex items-center rounded-full font-medium
+        inline-flex items-center rounded-full font-black
         ${config.bg} ${config.color}
         ${sizeClasses}
         ${clickable ? 'cursor-pointer hover:shadow-sm transition-shadow' : ''}
@@ -54,8 +54,8 @@ export function StatusSelector({ currentStatus, onChange }: StatusSelectorProps)
             whileTap={{ scale: 0.95 }}
             onClick={() => onChange(status)}
             className={`
-              px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300
-              ${isActive ? config.bg + ' ' + config.color + ' shadow-sm' : 'bg-white/60 text-[#6B7280] hover:bg-white'}
+              px-4 py-2.5 rounded-full text-xs font-black transition-all duration-300 tracking-wider uppercase
+              ${isActive ? config.bg + ' ' + config.color + ' shadow-sm' : 'bg-white/60 text-[#8C837A] hover:bg-white'}
             `}
           >
             {isActive && (

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { JobCard, Folder, TabType, AIMessage, Toast, ScheduleFilter, JobStatus, FolderColor, User } from '../types';
+import type { JobCard, Folder, TabType, AIMessage, Toast, ScheduleFilter, EventTypeFilter, UrgencyFilter, JobStatus, FolderColor, User, ChatSession } from '../types';
 import { mockJobs, mockFolders, mockAIMessages } from '../utils/mockData';
 
 // Tab 切换方向
@@ -38,7 +38,21 @@ interface AppState {
   clearAIMessages: () => void;
   hideAIMessage: (id: string) => void;
 
-  // 日程筛选
+  // AI 对话会话
+  chatSessions: ChatSession[];
+  currentSessionId: string | null;
+  addChatSession: (session: ChatSession) => void;
+  deleteChatSession: (id: string) => void;
+  setCurrentSessionId: (id: string | null) => void;
+  loadChatSession: (id: string) => void;
+  updateChatSession: (id: string, updates: Partial<ChatSession>) => void;
+
+  // 日程筛选 - 多维筛选
+  eventTypeFilter: EventTypeFilter;
+  setEventTypeFilter: (filter: EventTypeFilter) => void;
+  urgencyFilter: UrgencyFilter;
+  setUrgencyFilter: (filter: UrgencyFilter) => void;
+  // 兼容旧代码
   scheduleFilter: ScheduleFilter;
   setScheduleFilter: (filter: ScheduleFilter) => void;
 
@@ -211,7 +225,19 @@ export const useStore = create<AppState>()(
       // AI 聊天状态
       aiMessages: mockAIMessages,
       addAIMessage: (message) => {
-        set((state) => ({ aiMessages: [...state.aiMessages, message] }));
+        set((state) => {
+          const newMessages = [...state.aiMessages, message];
+          // 同时更新当前会话的消息
+          if (state.currentSessionId) {
+            const updatedSessions = state.chatSessions.map((session) =>
+              session.id === state.currentSessionId
+                ? { ...session, messages: newMessages, updatedAt: Date.now() }
+                : session
+            );
+            return { aiMessages: newMessages, chatSessions: updatedSessions };
+          }
+          return { aiMessages: newMessages };
+        });
       },
       clearAIMessages: () => set({ aiMessages: [] }),
       hideAIMessage: (id) => {
@@ -222,7 +248,53 @@ export const useStore = create<AppState>()(
         }));
       },
 
-      // 日程筛选
+      // AI 对话会话
+      chatSessions: [],
+      currentSessionId: null,
+      addChatSession: (session) => {
+        set((state) => ({
+          chatSessions: [session, ...state.chatSessions],
+          currentSessionId: session.id,
+        }));
+      },
+      deleteChatSession: (id) => {
+        set((state) => {
+          const newSessions = state.chatSessions.filter((s) => s.id !== id);
+          // 如果删除的是当前会话，清空当前消息
+          if (state.currentSessionId === id) {
+            return {
+              chatSessions: newSessions,
+              currentSessionId: null,
+              aiMessages: [],
+            };
+          }
+          return { chatSessions: newSessions };
+        });
+      },
+      setCurrentSessionId: (id) => set({ currentSessionId: id }),
+      loadChatSession: (id) => {
+        const session = get().chatSessions.find((s) => s.id === id);
+        if (session) {
+          set({
+            currentSessionId: id,
+            aiMessages: session.messages,
+          });
+        }
+      },
+      updateChatSession: (id, updates) => {
+        set((state) => ({
+          chatSessions: state.chatSessions.map((session) =>
+            session.id === id ? { ...session, ...updates, updatedAt: Date.now() } : session
+          ),
+        }));
+      },
+
+      // 日程筛选 - 多维筛选
+      eventTypeFilter: 'all',
+      setEventTypeFilter: (filter) => set({ eventTypeFilter: filter }),
+      urgencyFilter: 'all',
+      setUrgencyFilter: (filter) => set({ urgencyFilter: filter }),
+      // 兼容旧代码
       scheduleFilter: 'all',
       setScheduleFilter: (filter) => set({ scheduleFilter: filter }),
 
@@ -346,6 +418,8 @@ export const useStore = create<AppState>()(
         jobs: state.jobs,
         aiMessages: state.aiMessages,
         user: state.user,
+        chatSessions: state.chatSessions,
+        currentSessionId: state.currentSessionId,
       }),
     }
   )

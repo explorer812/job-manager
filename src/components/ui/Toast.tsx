@@ -10,10 +10,10 @@ const iconMap = {
 };
 
 const colorMap = {
-  success: 'bg-[#B5EAD7] text-[#2D3748]',
-  info: 'bg-[#C7CEEA] text-[#2D3748]',
-  warning: 'bg-[#FFDAC1] text-[#2D3748]',
-  error: 'bg-[#FFB7B2] text-[#2D3748]',
+  success: 'bg-[#EAF4F4] text-[#2D2D2D] border border-[#EAF4F4]',
+  info: 'bg-[#E2EAFC] text-[#2D2D2D] border border-[#E2EAFC]',
+  warning: 'bg-[#FFEDD8] text-[#2D2D2D] border border-[#FFEDD8]',
+  error: 'bg-[#FDE2E4] text-[#2D2D2D] border border-[#FDE2E4]',
 };
 
 export function ToastContainer() {
@@ -32,18 +32,18 @@ export function ToastContainer() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className={`pointer-events-auto mx-auto max-w-sm w-full ${colorMap[toast.type]} rounded-2xl shadow-lg backdrop-blur-md`}
+              className={`pointer-events-auto mx-auto max-w-sm w-full ${colorMap[toast.type]} rounded-2xl shadow-lg`}
             >
               <div className="flex items-center gap-3 px-4 py-3">
-                <Icon size={20} className="flex-shrink-0" />
-                <p className="flex-1 text-sm font-medium">{toast.message}</p>
+                <Icon size={20} className="flex-shrink-0" strokeWidth={2.5} />
+                <p className="flex-1 text-sm font-black">{toast.message}</p>
                 {toast.action && (
                   <button
                     onClick={() => {
                       toast.action?.onClick();
                       removeToast(toast.id);
                     }}
-                    className="text-sm font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity"
+                    className="text-sm font-black underline underline-offset-2 hover:opacity-80 transition-opacity"
                   >
                     {toast.action.label}
                   </button>
@@ -52,7 +52,7 @@ export function ToastContainer() {
                   onClick={() => removeToast(toast.id)}
                   className="p-1 rounded-full hover:bg-black/10 transition-colors"
                 >
-                  <X size={16} />
+                  <X size={16} strokeWidth={2.5} />
                 </button>
               </div>
             </motion.div>

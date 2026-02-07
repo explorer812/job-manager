@@ -119,15 +119,15 @@ export function LoginModal() {
           className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
         >
           {/* 头部 */}
-          <div className="bg-gradient-to-r from-[#B5EAD7] to-[#C7CEEA] p-6 relative">
+          <div className="bg-[#2D2D2D] p-6 relative">
             <button
               onClick={() => setIsLoginModalOpen(false)}
-              className="absolute top-4 right-4 w-8 h-8 bg-white/30 hover:bg-white/50 rounded-full flex items-center justify-center transition-colors"
+              className="absolute top-4 right-4 w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
             >
               <X size={18} className="text-white" />
             </button>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/30 rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
                 <Sparkles size={24} className="text-white" />
               </div>
               <div>
@@ -146,13 +146,13 @@ export function LoginModal() {
           {/* 表单区域 */}
           <div className="p-6">
             {/* 切换标签 */}
-            <div className="flex gap-2 p-1 bg-gray-100 rounded-xl mb-6">
+            <div className="flex gap-2 p-1 bg-[#F9F7F2] rounded-xl mb-6">
               <button
                 onClick={() => setLoginModalMode('login')}
                 className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
                   loginModalMode === 'login'
-                    ? 'bg-white text-[#2D3748] shadow-sm'
-                    : 'text-[#718096] hover:text-[#2D3748]'
+                    ? 'bg-white text-[#2D2D2D] shadow-sm'
+                    : 'text-[#8C837A] hover:text-[#2D2D2D]'
                 }`}
               >
                 登录
@@ -161,8 +161,8 @@ export function LoginModal() {
                 onClick={() => setLoginModalMode('register')}
                 className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
                   loginModalMode === 'register'
-                    ? 'bg-white text-[#2D3748] shadow-sm'
-                    : 'text-[#718096] hover:text-[#2D3748]'
+                    ? 'bg-white text-[#2D2D2D] shadow-sm'
+                    : 'text-[#8C837A] hover:text-[#2D2D2D]'
                 }`}
               >
                 注册
@@ -173,13 +173,13 @@ export function LoginModal() {
               <form onSubmit={handleLogin} className="space-y-4">
                 {/* 邮箱 */}
                 <div>
-                  <label className="block text-sm font-medium text-[#2D3748] mb-1.5">
+                  <label className="block text-sm font-medium text-[#2D2D2D] mb-1.5">
                     邮箱
                   </label>
                   <div className="relative">
                     <Mail
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#718096]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8C837A]"
                     />
                     <input
                       type="email"
@@ -189,20 +189,20 @@ export function LoginModal() {
                       }
                       placeholder="your@email.com"
                       required
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#2D3748] placeholder:text-[#A0AEC0] focus:outline-none focus:border-[#B5EAD7] focus:ring-2 focus:ring-[#B5EAD7]/20 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#F9F7F2] border border-[#EFECE6] rounded-xl text-[#2D2D2D] placeholder:text-[#A8A29E] focus:outline-none focus:border-[#2D2D2D] transition-all"
                     />
                   </div>
                 </div>
 
                 {/* 密码 */}
                 <div>
-                  <label className="block text-sm font-medium text-[#2D3748] mb-1.5">
+                  <label className="block text-sm font-medium text-[#2D2D2D] mb-1.5">
                     密码
                   </label>
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#718096]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8C837A]"
                     />
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -212,12 +212,12 @@ export function LoginModal() {
                       }
                       placeholder="请输入密码"
                       required
-                      className="w-full pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#2D3748] placeholder:text-[#A0AEC0] focus:outline-none focus:border-[#B5EAD7] focus:ring-2 focus:ring-[#B5EAD7]/20 transition-all"
+                      className="w-full pl-10 pr-10 py-2.5 bg-[#F9F7F2] border border-[#EFECE6] rounded-xl text-[#2D2D2D] placeholder:text-[#A8A29E] focus:outline-none focus:border-[#2D2D2D] transition-all"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#718096] hover:text-[#2D3748]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C837A] hover:text-[#2D2D2D]"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -228,7 +228,7 @@ export function LoginModal() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 bg-gradient-to-r from-[#B5EAD7] to-[#C7CEEA] text-[#2D3748] font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 bg-[#2D2D2D] text-white font-medium rounded-xl hover:bg-[#2D2D2D]/90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? '登录中...' : '登录'}
                 </button>
@@ -237,13 +237,13 @@ export function LoginModal() {
               <form onSubmit={handleRegister} className="space-y-4">
                 {/* 昵称 */}
                 <div>
-                  <label className="block text-sm font-medium text-[#2D3748] mb-1.5">
+                  <label className="block text-sm font-medium text-[#2D2D2D] mb-1.5">
                     昵称
                   </label>
                   <div className="relative">
                     <User
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#718096]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8C837A]"
                     />
                     <input
                       type="text"
@@ -253,20 +253,20 @@ export function LoginModal() {
                       }
                       placeholder="请输入昵称"
                       required
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#2D3748] placeholder:text-[#A0AEC0] focus:outline-none focus:border-[#B5EAD7] focus:ring-2 focus:ring-[#B5EAD7]/20 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#F9F7F2] border border-[#EFECE6] rounded-xl text-[#2D2D2D] placeholder:text-[#A8A29E] focus:outline-none focus:border-[#2D2D2D] transition-all"
                     />
                   </div>
                 </div>
 
                 {/* 邮箱 */}
                 <div>
-                  <label className="block text-sm font-medium text-[#2D3748] mb-1.5">
+                  <label className="block text-sm font-medium text-[#2D2D2D] mb-1.5">
                     邮箱
                   </label>
                   <div className="relative">
                     <Mail
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#718096]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8C837A]"
                     />
                     <input
                       type="email"
@@ -276,20 +276,20 @@ export function LoginModal() {
                       }
                       placeholder="your@email.com"
                       required
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#2D3748] placeholder:text-[#A0AEC0] focus:outline-none focus:border-[#B5EAD7] focus:ring-2 focus:ring-[#B5EAD7]/20 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#F9F7F2] border border-[#EFECE6] rounded-xl text-[#2D2D2D] placeholder:text-[#A8A29E] focus:outline-none focus:border-[#2D2D2D] transition-all"
                     />
                   </div>
                 </div>
 
                 {/* 密码 */}
                 <div>
-                  <label className="block text-sm font-medium text-[#2D3748] mb-1.5">
+                  <label className="block text-sm font-medium text-[#2D2D2D] mb-1.5">
                     密码
                   </label>
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#718096]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8C837A]"
                     />
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -300,12 +300,12 @@ export function LoginModal() {
                       placeholder="至少6位字符"
                       required
                       minLength={6}
-                      className="w-full pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#2D3748] placeholder:text-[#A0AEC0] focus:outline-none focus:border-[#B5EAD7] focus:ring-2 focus:ring-[#B5EAD7]/20 transition-all"
+                      className="w-full pl-10 pr-10 py-2.5 bg-[#F9F7F2] border border-[#EFECE6] rounded-xl text-[#2D2D2D] placeholder:text-[#A8A29E] focus:outline-none focus:border-[#2D2D2D] transition-all"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#718096] hover:text-[#2D3748]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C837A] hover:text-[#2D2D2D]"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -314,13 +314,13 @@ export function LoginModal() {
 
                 {/* 确认密码 */}
                 <div>
-                  <label className="block text-sm font-medium text-[#2D3748] mb-1.5">
+                  <label className="block text-sm font-medium text-[#2D2D2D] mb-1.5">
                     确认密码
                   </label>
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#718096]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8C837A]"
                     />
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -333,7 +333,7 @@ export function LoginModal() {
                       }
                       placeholder="再次输入密码"
                       required
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#2D3748] placeholder:text-[#A0AEC0] focus:outline-none focus:border-[#B5EAD7] focus:ring-2 focus:ring-[#B5EAD7]/20 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#F9F7F2] border border-[#EFECE6] rounded-xl text-[#2D2D2D] placeholder:text-[#A8A29E] focus:outline-none focus:border-[#2D2D2D] transition-all"
                     />
                   </div>
                 </div>
@@ -342,7 +342,7 @@ export function LoginModal() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 bg-gradient-to-r from-[#B5EAD7] to-[#C7CEEA] text-[#2D3748] font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 bg-[#2D2D2D] text-white font-medium rounded-xl hover:bg-[#2D2D2D]/90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? '注册中...' : '注册'}
                 </button>
@@ -350,13 +350,13 @@ export function LoginModal() {
             )}
 
             {/* 底部提示 */}
-            <p className="text-center text-xs text-[#718096] mt-4">
+            <p className="text-center text-xs text-[#8C837A] mt-4">
               {loginModalMode === 'login' ? (
                 <>
                   还没有账号？
                   <button
                     onClick={() => setLoginModalMode('register')}
-                    className="text-[#B5EAD7] hover:underline ml-1"
+                    className="text-[#2D2D2D] hover:underline ml-1"
                   >
                     立即注册
                   </button>
@@ -366,7 +366,7 @@ export function LoginModal() {
                   已有账号？
                   <button
                     onClick={() => setLoginModalMode('login')}
-                    className="text-[#B5EAD7] hover:underline ml-1"
+                    className="text-[#2D2D2D] hover:underline ml-1"
                   >
                     立即登录
                   </button>

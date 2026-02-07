@@ -43,7 +43,7 @@ export function PageTransition({ children, tab }: PageTransitionProps) {
             x: { type: 'spring', stiffness: 300, damping: 30 },
             opacity: { duration: 0.2 },
           }}
-          className="h-full w-full absolute inset-0 overflow-hidden"
+          className="h-full w-full overflow-hidden"
         >
           {children}
         </motion.div>
