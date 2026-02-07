@@ -39,7 +39,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reminderDate, setReminderDate] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<ReminderEvent>('toApply');
-  const [editedJob, setEditedJob] = useState(job);
+  const [editedJob, setEditedJob] = useState<typeof job>(job);
 
   // 当 job 变化时更新 editedJob
   useEffect(() => {
@@ -160,7 +160,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                     <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase">公司名称</label>
                     <input
                       type="text"
-                      value={editedJob?.company.name}
+                      value={editedJob?.company.name || ''}
                       onChange={(e) =>
                         setEditedJob((prev) =>
                           prev
@@ -168,7 +168,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                                 ...prev,
                                 company: { ...prev.company, name: e.target.value },
                               }
-                            : null
+                            : prev
                         )
                       }
                       className="w-full text-xl font-black text-[#2D2D2D] bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-3 focus:border-[#2D2D2D] outline-none tracking-tight"
@@ -198,7 +198,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                     <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">职位名称</label>
                     <input
                       type="text"
-                      value={editedJob?.position.title}
+                      value={editedJob?.position.title || ''}
                       onChange={(e) =>
                         setEditedJob((prev) =>
                           prev
@@ -206,7 +206,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                                 ...prev,
                                 position: { ...prev.position, title: e.target.value },
                               }
-                            : null
+                            : prev
                         )
                       }
                       className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
@@ -225,7 +225,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                     <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">薪资范围</label>
                     <input
                       type="text"
-                      value={editedJob?.position.salary}
+                      value={editedJob?.position.salary || ''}
                       onChange={(e) =>
                         setEditedJob((prev) =>
                           prev
@@ -233,7 +233,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                                 ...prev,
                                 position: { ...prev.position, salary: e.target.value },
                               }
-                            : null
+                            : prev
                         )
                       }
                       className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
@@ -252,7 +252,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                     <label className="text-xs font-black text-[#8C837A] tracking-widest uppercase block mb-1">工作地点</label>
                     <input
                       type="text"
-                      value={editedJob?.position.location}
+                      value={editedJob?.position.location || ''}
                       onChange={(e) =>
                         setEditedJob((prev) =>
                           prev
@@ -260,7 +260,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                                 ...prev,
                                 position: { ...prev.position, location: e.target.value },
                               }
-                            : null
+                            : prev
                         )
                       }
                       className="w-full text-[#2D2D2D] font-black bg-[#F9F7F2] border border-[#EFECE6] rounded-2xl px-4 py-2 focus:border-[#2D2D2D] outline-none"
@@ -287,7 +287,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                                 ...prev,
                                 position: { ...prev.position, education: e.target.value },
                               }
-                            : null
+                            : prev
                         )
                       }
                       placeholder="如：本科及以上"
@@ -315,7 +315,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                                 ...prev,
                                 position: { ...prev.position, experience: e.target.value },
                               }
-                            : null
+                            : prev
                         )
                       }
                       placeholder="如：3-5年"
@@ -343,7 +343,7 @@ export function JobDetailDrawer({ isOpen, onClose }: { isOpen: boolean; onClose:
                                 ...prev,
                                 applyLink: e.target.value,
                               }
-                            : null
+                            : prev
                         )
                       }
                       placeholder="https://..."
