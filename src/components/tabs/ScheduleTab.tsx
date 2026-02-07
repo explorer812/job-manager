@@ -309,7 +309,8 @@ export function ScheduleTab() {
     // 如果有职位，显示该日期的职位
     if (jobsOnDate.length > 0) {
       // 临时显示该日期的职位
-      setScheduleFilter('all');
+      setEventTypeFilter('all');
+      setUrgencyFilter('all');
     }
   };
 

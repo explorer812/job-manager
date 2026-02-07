@@ -433,23 +433,25 @@ export const selectFilteredJobs = (state: AppState) => {
 };
 
 export const selectScheduleJobs = (state: AppState) => {
-  const { jobs, scheduleFilter } = state;
+  const { jobs, eventTypeFilter, urgencyFilter } = state;
   const now = new Date();
 
   // 只显示有提醒且未归档的职位
-  const jobsWithReminder = jobs.filter((job) => job.hasReminder && !job.isArchived);
+  let jobsWithReminder = jobs.filter((job) => job.hasReminder && !job.isArchived);
 
-  if (scheduleFilter === 'archived') {
-    return jobs.filter((job) => job.isArchived);
+  // 按事件类型筛选
+  if (eventTypeFilter !== 'all') {
+    jobsWithReminder = jobsWithReminder.filter((job) => job.reminderEvent === eventTypeFilter);
   }
 
-  return jobsWithReminder
-    .filter((job) => {
+  // 按紧急程度筛选
+  if (urgencyFilter !== 'all') {
+    jobsWithReminder = jobsWithReminder.filter((job) => {
       if (!job.position.deadline) return false;
       const deadline = new Date(job.position.deadline);
       const daysUntil = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-      switch (scheduleFilter) {
+      switch (urgencyFilter) {
         case 'urgent':
           return daysUntil <= 3 && daysUntil >= 0;
         case 'week':
@@ -459,12 +461,10 @@ export const selectScheduleJobs = (state: AppState) => {
         default:
           return true;
       }
-    })
-    .sort((a, b) => {
-      if (!a.position.deadline || !b.position.deadline) return 0;
-      return new Date(a.position.deadline).getTime() - new Date(b.position.deadline).getTime();
     });
-};
+  }
+
+
 
 export const selectSelectedJob = (state: AppState) => {
   const { jobs, selectedJobId } = state;

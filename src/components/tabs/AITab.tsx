@@ -23,7 +23,6 @@ import {
   Search,
   Trash2,
   History,
-  Sparkles,
 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { PathPickerModal } from './PathPickerModal';
