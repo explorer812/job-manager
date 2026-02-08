@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Folder, Trash2, Pencil, ChevronLeft, ChevronRight, Search, Briefcase } from 'lucide-react';
+import { Plus, Trash2, Pencil, ChevronLeft, ChevronRight, Search, Briefcase } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { Modal } from '../ui/Modal';
 import { JobCard } from './JobCard';
