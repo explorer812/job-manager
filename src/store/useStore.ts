@@ -461,10 +461,14 @@ export const selectScheduleJobs = (state: AppState) => {
         default:
           return true;
       }
-    });
+    })
   }
 
-
+  return jobsWithReminder.sort((a, b) => {
+    if (!a.position.deadline || !b.position.deadline) return 0;
+    return new Date(a.position.deadline).getTime() - new Date(b.position.deadline).getTime();
+  });
+};
 
 export const selectSelectedJob = (state: AppState) => {
   const { jobs, selectedJobId } = state;
